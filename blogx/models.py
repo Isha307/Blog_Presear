@@ -13,7 +13,6 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
-    bookmark = models.ForeignKey('Bookmark', on_delete=models.CASCADE, blank=True)
 
 
 class Post(models.Model):
@@ -24,9 +23,15 @@ class Post(models.Model):
     image = models.ImageField(upload_to='blog')
     author = models.ForeignKey(User,on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag', blank=True)
-    subcategory = models.ForeignKey('Category', on_delete=models.CASCADE, null=True, blank=True)
+    subcategory = models.ForeignKey('subcategory', on_delete=models.CASCADE, null=True, blank=True)
     is_draft = models.BooleanField(default=False)
-    likes = models.ManyToManyField(User, blank=True, related_name='likes')
+    trending = models.BooleanField(default=False)
+
+
+class likes(models.Model):
+    user = models.ForeignKey('Profile', blank=True, on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
 
 class Video(models.Model):
     title = models.CharField(max_length=256, default='new blog')
@@ -36,15 +41,13 @@ class Video(models.Model):
     update_time = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='blog')
     video = models.FileField(upload_to='video')
-    author = models.ForeignKey(User,on_delete=models.CASCADE)
+    author = models.ForeignKey('Profile',on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag', blank=True)
-    subcategory = models.ForeignKey('subcategory', on_delete=models.CASCADE, null=True, blank=True)
+    subtegory = models.ForeignKey('subcategory', on_delete=models.CASCADE, null=True, blank=True)
+    is_draft = models.BooleanField(default=False)
+    trending = models.BooleanField(default=False)
 
-    
-class Story(models.Model):
-    subcategory = models.ForeignKey('subcategory', on_delete=models.CASCADE, null=True, blank=True)
-
-class Company(models.Model):
+'''class Company(models.Model):
     name = models.CharField(max_length=30)
     logo = models.ImageField(upload_to='logo')
     description = models.TextField()
@@ -59,12 +62,12 @@ class Company(models.Model):
 
 class CompanyPost(models.Model):
     post = models.ManyToManyField('Post', blank=True)
-    company_name = models.ForeignKey('Company', on_delete=models.CASCADE, null=True, blank=True)
+    company_name = models.ForeignKey('Company', on_delete=models.CASCADE, null=True, blank=True)'''
 
 class Tag(models.Model):
     name = models.CharField(max_length=256)
 
-class subcategory(models.Model):
+class Category(models.Model):
     cat_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
     description = models.TextField()
@@ -72,10 +75,10 @@ class subcategory(models.Model):
     image = models.ImageField(upload_to='category')
     add_date = models.DateTimeField(auto_now_add=True, null=True)
 
-class Category(models.Model):
-    story = models.ForeignKey('Story', on_delete=models.CASCADE)
-    video = models.ForeignKey('Video', on_delete=models.CASCADE)
-    company = models.ForeignKey('Company', on_delete=models.CASCADE)
+class subcategory(models.Model):
+    Category = models.ForeignKey('Category', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
@@ -90,7 +93,7 @@ class reply(models.Model):
 	date_added = models.DateTimeField(auto_now_add=True)
 
 class Bookmark(models.Model):
-    user = models.ForeignKey(User , on_delete=models.CASCADE)
+    user = models.ForeignKey('Profile' , on_delete=models.CASCADE)
     post = models.ManyToManyField('Post', blank=True)
 
     
