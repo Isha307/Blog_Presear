@@ -14,6 +14,10 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
 
+    class Meta:
+        ordering = ['first_name']
+        db_table = 'profile'
+
 
 class Post(models.Model):
     title = models.CharField(max_length=256, default='new blog')
@@ -27,11 +31,20 @@ class Post(models.Model):
     is_draft = models.BooleanField(default=False)
     trending = models.BooleanField(default=False)
 
+    class Meta:
+        get_latest_by = ['pub_time','update_time']
+        db_table = 'post'
+
 
 class likes(models.Model):
     user = models.ForeignKey('Profile', blank=True, on_delete=models.CASCADE)
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
     like = models.BooleanField(default=False)
+
+    class Meta:
+        managed = False
+        db_table = 'likes'
+        unique_together = (('post', 'user'),)
 
 class Video(models.Model):
     title = models.CharField(max_length=256, default='new blog')
@@ -46,6 +59,10 @@ class Video(models.Model):
     subtegory = models.ForeignKey('subcategory', on_delete=models.CASCADE, null=True, blank=True)
     is_draft = models.BooleanField(default=False)
     trending = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'video'
+        get_latest_by = ['pub_time','update_time']
 
 '''class Company(models.Model):
     name = models.CharField(max_length=30)
@@ -67,6 +84,10 @@ class CompanyPost(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=256)
 
+    class Meta:
+        db_table = 'tag'
+        
+
 class Category(models.Model):
     cat_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=100)
@@ -75,26 +96,40 @@ class Category(models.Model):
     image = models.ImageField(upload_to='category')
     add_date = models.DateTimeField(auto_now_add=True, null=True)
 
+    class Meta:
+        get_latest_by = 'add_date'
+        db_table = 'category'
+
 class subcategory(models.Model):
     Category = models.ForeignKey('Category', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     description = models.TextField()
+    class Meta:
+        db_table = 'subcategory'
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        get_latest_by = 'date_added'
+        db_table = 'comment'
     
 
 class reply(models.Model):
 	reply = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name="replies", null=True)
 	rep = models.TextField()
 	date_added = models.DateTimeField(auto_now_add=True)
+    
 
 class Bookmark(models.Model):
     user = models.ForeignKey('Profile' , on_delete=models.CASCADE)
     post = models.ManyToManyField('Post', blank=True)
+
+    class Meta:
+        db_table = 'Bookmark'
 
     
 
