@@ -2,13 +2,72 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
-from django.contrib.auth.models import User
 from froala_editor.fields import FroalaField
+from django.contrib.auth.models import BaseUserManager,AbstractBaseUser
+
+class UserManager(BaseUserManager):
+  def create_user(self, email, name, tc, password=None, password2=None):
+      if not email:
+          raise ValueError('User must have an email address')
+
+      user = self.model(
+          email=self.normalize_email(email),
+          name=name,
+          tc=tc,
+      )
+
+      user.set_password(password)
+      user.save(using=self._db)
+      return user
+
+  def create_superuser(self, email, name, tc, password=None):
+      user = self.create_user(
+          email,
+          password=password,
+          name=name,
+          tc=tc,
+      )
+      user.is_admin = True
+      user.save(using=self._db)
+      return user
+
+class User(AbstractBaseUser):
+  email = models.EmailField(
+      verbose_name='Email',
+      max_length=255,
+      unique=True,
+  )
+  name = models.CharField(max_length=200)
+  tc = models.BooleanField()
+  is_active = models.BooleanField(default=True)
+  is_admin = models.BooleanField(default=False)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  objects = UserManager()
+
+  USERNAME_FIELD = 'email'
+  REQUIRED_FIELDS = ['name', 'tc']
+
+  def __str__(self):
+      return self.email
+
+  def has_perm(self, perm, obj=None):
+      return self.is_admin
+
+  def has_module_perms(self, app_label):
+      return True
+
+  @property
+  def is_staff(self):
+      return self.is_admin
+
+
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User , on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='profile_pic')
+    user = models.ForeignKey('User' , on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='profile_pic', default=False)
     bio = models.TextField(max_length=500, blank=True, null=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -17,6 +76,10 @@ class Profile(models.Model):
     class Meta:
         ordering = ['first_name']
         db_table = 'profile'
+        verbose_name = "User Profile"
+
+    def __str__(self):
+        return self.first_name
 
 
 class Post(models.Model):
@@ -34,21 +97,25 @@ class Post(models.Model):
     class Meta:
         get_latest_by = ['pub_time','update_time']
         db_table = 'post'
+        verbose_name = "Post"
+
+    def __str__(self):
+        return self.title
 
 
 class likes(models.Model):
-    user = models.ForeignKey('Profile', blank=True, on_delete=models.CASCADE)
-    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    user = models.ForeignKey('Profile', blank=True, null=True, on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', blank=True, null=True, on_delete=models.CASCADE)
     like = models.BooleanField(default=False)
 
     class Meta:
-        managed = False
-        db_table = 'likes'
-        unique_together = (('post', 'user'),)
+        verbose_name = "likes"
+
+    def __str__(self):
+        return self.like
 
 class Video(models.Model):
     title = models.CharField(max_length=256, default='new blog')
-    content = FroalaField()
     series = models.IntegerField()
     pub_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
@@ -63,6 +130,11 @@ class Video(models.Model):
     class Meta:
         db_table = 'video'
         get_latest_by = ['pub_time','update_time']
+        verbose_name = "Video"
+
+    def __str__(self):
+        return self.title
+
 
 '''class Company(models.Model):
     name = models.CharField(max_length=30)
@@ -86,6 +158,10 @@ class Tag(models.Model):
 
     class Meta:
         db_table = 'tag'
+        verbose_name = "Tag"
+
+    def __str__(self):
+        return self.name
         
 
 class Category(models.Model):
@@ -98,14 +174,21 @@ class Category(models.Model):
 
     class Meta:
         get_latest_by = 'add_date'
-        db_table = 'category'
+        verbose_name = "Category"
+
+    def __str__(self):
+        return self.title
 
 class subcategory(models.Model):
     Category = models.ForeignKey('Category', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     description = models.TextField()
+    
     class Meta:
-        db_table = 'subcategory'
+        verbose_name = "Sub Category"
+
+    def __str__(self):
+        return self.title
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
@@ -116,12 +199,22 @@ class Comment(models.Model):
     class Meta:
         get_latest_by = 'date_added'
         db_table = 'comment'
+        verbose_name = "Comment"
+
+    def __str__(self):
+        return self.name
     
 
-class reply(models.Model):
-	reply = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name="replies", null=True)
-	rep = models.TextField()
-	date_added = models.DateTimeField(auto_now_add=True)
+class Reply(models.Model):
+    reply = models.ForeignKey('Comment' , on_delete=models.CASCADE, related_name='replies', null=True)
+    rep = models.TextField()
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Reply"
+
+    def __str__(self):
+        return self.rep
     
 
 class Bookmark(models.Model):
@@ -129,7 +222,10 @@ class Bookmark(models.Model):
     post = models.ManyToManyField('Post', blank=True)
 
     class Meta:
-        db_table = 'Bookmark'
+        verbose_name = "Bookmark"
+
+    def __str__(self):
+        return self.post
 
     
 
