@@ -123,7 +123,7 @@ class Video(models.Model):
     video = models.FileField(upload_to='video')
     author = models.ForeignKey('Profile',on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag', blank=True)
-    subtegory = models.ForeignKey('subcategory', on_delete=models.CASCADE, null=True, blank=True)
+    subcategory = models.ForeignKey('subcategory', on_delete=models.CASCADE, null=True, blank=True)
     is_draft = models.BooleanField(default=False)
     trending = models.BooleanField(default=False)
 
