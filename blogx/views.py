@@ -10,7 +10,7 @@ from .renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
-from .serializers import PostSerializer
+from .serializers import PostSerializer, videoSerializer
 # Create your views here.
 
 def get_tokens_for_user(user):
@@ -80,4 +80,12 @@ class PostList(generics.ListCreateAPIView):
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post
     serializer_class = PostSerializer
+	
+class VideoList(generics.ListCreateAPIView):
+    queryset = Video.objects.all()
+    serializer_class = videoSerializer
+
+class VideoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Video
+    serializer_class = videoSerializer
 
