@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path,include
 from blogx.views import UserRegistrationView, UserLoginView, UserChangePasswordView, SendPasswordResetEmailView, UserPasswordResetView
 from rest_framework.authtoken.views import obtain_auth_token
-from .views import PostList, PostDetail
+from .views import PostList, PostDetail, VideoList, VideoDetail
 
 urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='register'),
@@ -12,5 +12,7 @@ urlpatterns = [
     path('resetpassword/<uid>/<token>/', UserPasswordResetView.as_view(), name='reset-password'),
     path('posts', PostList.as_view()),
     path('postdetail/<int:pk>', PostDetail.as_view()),
+    path('videos', VideoList.as_view()),
+    path('videodetail/<int:pk>', VideoDetail.as_view()),
 
 ]
