@@ -98,8 +98,14 @@ class UserPasswordResetSerializer(serializers.Serializer):
       PasswordResetTokenGenerator().check_token(user, token)
       raise serializers.ValidationError('Token is not Valid or Expired')
       
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
+      
 class videoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
         fields = '__all__'
+
     
