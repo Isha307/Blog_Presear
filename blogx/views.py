@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate
 from .renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
+from .serializers import PostSerializer
 # Create your views here.
 
 def get_tokens_for_user(user):
@@ -70,4 +72,12 @@ class UserPasswordResetView(APIView):
     if serializer.is_valid(raise_exception=True):
     	return Response({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PostList(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Post
+    serializer_class = PostSerializer
 
