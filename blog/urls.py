@@ -23,7 +23,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     path('api-auth/', include('blogx.urls')),
     path('admin/', admin.site.urls),
-    path('froala_editor/',include('froala_editor.urls'))
+    
 ]
 
 if settings.DEBUG:
