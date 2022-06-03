@@ -27,7 +27,7 @@ class Profile(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=256, default='new blog')
-    content = FroalaField()
+    content = TextField()
     pub_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='blog')

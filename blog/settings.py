@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'blogx',
     'djoser',
-    'froala_editor',
+
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
