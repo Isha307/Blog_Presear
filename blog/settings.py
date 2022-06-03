@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'blogx',
     'djoser',
-
+    'drf_yasg',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
