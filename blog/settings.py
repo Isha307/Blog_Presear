@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'djoser',
     'drf_yasg',
     'rest_framework',
-    'froala_editor',
+    #'froala_editor',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'rest_auth',

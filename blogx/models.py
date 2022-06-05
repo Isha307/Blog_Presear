@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
-from froala_editor.fields import FroalaField
+#from froala_editor.fields import FroalaField
 from django.contrib.auth.models import User
 
 
@@ -27,7 +27,7 @@ class Profile(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=256, default='new blog')
-    content = FroalaField()
+    content = models.TextField()
     pub_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='blog')
